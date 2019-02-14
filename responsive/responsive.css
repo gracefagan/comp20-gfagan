@@ -1,0 +1,87 @@
+/* 
+ * responsive.css 
+ * Grace Fagan Comp20 Spring 2019
+ * Lab 4: Responsive Design
+ */
+
+/* Top Left Image */
+@media screen 
+	and (min-width: 1601px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 0 0px;
+	}
+}
+
+/* Top Right Image */
+@media screen 
+	and (min-width: 1401px)
+	and (max-width: 1600px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 312.5px 0px;
+	}
+}
+
+/* Bottom Left Image */
+@media screen 
+	and (min-width: 1201px)
+	and (max-width: 1400px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 0 -312.5px;
+	}
+}
+
+/* Bottom Right Image */
+@media screen 
+	and (min-width: 1001px)
+	and (max-width: 1200px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 312.5px -312.5px;
+	}
+}
+
+/* Bottom Left Image */
+@media screen 
+	and (min-width: 801px)
+	and (max-width: 1000px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 0 -312.5px;
+	}
+}
+
+/* Top Right Image */
+@media screen 
+	and (min-width: 601px)
+	and (max-width: 800px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 312.5px 0px;
+	}
+}
+
+/* Top Left Image */
+@media screen 
+	and (max-width: 600px){
+	.homer {
+	width: 312.5px;
+	height: 312.5px;
+
+	background: url(homer.jpg) 0 0px;
+	}
+}

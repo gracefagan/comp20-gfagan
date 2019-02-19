@@ -1,0 +1,77 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Union Strike Folk Song</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+<h1 id="title">Union Strike Folk Song</h1>
+
+<video id="vid" src="https://www.cs.tufts.edu/comp/20/butwehavethepower.mp4" id="butwehavethepower" controls></video>
+<div id="lyrics"></div>
+
+<script>
+
+	var vid = document.getElementById('vid');
+	vid.addEventListener("timeupdate", PrintLyrics);
+
+	function PrintLyrics(){
+		
+		if (vid.currentTime > 6 && vid.currentTime < 8)
+			document.getElementById("lyrics").innerHTML = "Lisa: Come gather round, children,";
+		else if (vid.currentTime > 8 && vid.currentTime < 11)
+			document.getElementById("lyrics").innerHTML = "It's high time ye learned";
+		else if (vid.currentTime > 11 && vid.currentTime < 13)
+			document.getElementById("lyrics").innerHTML = "'Bout a hero named Homer";
+		else if (vid.currentTime > 13 && vid.currentTime < 15)
+			document.getElementById("lyrics").innerHTML = "And a devil named Burns.";
+		else if (vid.currentTime > 17 && vid.currentTime < 19)
+			document.getElementById("lyrics").innerHTML = "We'll march 'till we drop";
+		else if (vid.currentTime > 19 && vid.currentTime < 21)
+			document.getElementById("lyrics").innerHTML = "The girls and the fellas.";
+		else if (vid.currentTime > 21 && vid.currentTime < 23)
+			document.getElementById("lyrics").innerHTML = "We'll fight 'till the death";
+		else if (vid.currentTime > 23 && vid.currentTime < 27)
+			document.getElementById("lyrics").innerHTML = "Or else fold like umbrellas.";
+		else if (vid.currentTime > 27 && vid.currentTime < 38)
+			document.getElementById("lyrics").innerHTML = "";
+		else if (vid.currentTime > 38 && vid.currentTime < 40)
+			document.getElementById("lyrics").innerHTML = "So we'll march day and night";
+		else if (vid.currentTime > 40 && vid.currentTime < 42)
+			document.getElementById("lyrics").innerHTML = "By the big cooling tower.";
+		else if (vid.currentTime > 43 && vid.currentTime < 44)
+			document.getElementById("lyrics").innerHTML = "They have the plant";
+		else if (vid.currentTime > 45 && vid.currentTime < 50)
+			document.getElementById("lyrics").innerHTML = "But we have the power.";
+		else if (vid.currentTime > 53 && vid.currentTime < 56)
+			document.getElementById("lyrics").innerHTML = 'Lenny: Now do "Classical Gas"';
+		else if (vid.currentTime > 55 && vid.currentTime < 72)
+			document.getElementById("lyrics").innerHTML = "";
+		else if (vid.currentTime > 72 && vid.currentTime < 74)
+			document.getElementById("lyrics").innerHTML = "So we'll march day and night";
+		else if (vid.currentTime > 74 && vid.currentTime < 76)
+			document.getElementById("lyrics").innerHTML = "By the big cooling tower.";
+		else if (vid.currentTime > 77 && vid.currentTime < 79)
+			document.getElementById("lyrics").innerHTML = "They have the plant";
+		else if (vid.currentTime > 79 && vid.currentTime < 81)
+			document.getElementById("lyrics").innerHTML = "But we have the power.";
+		else if (vid.currentTime > 82 && vid.currentTime < 84)
+			document.getElementById("lyrics").innerHTML = "So we'll march day and night";
+		else if (vid.currentTime > 84 && vid.currentTime < 86)
+			document.getElementById("lyrics").innerHTML = "By the big cooling tower.";
+		else if (vid.currentTime > 87 && vid.currentTime < 89)
+			document.getElementById("lyrics").innerHTML = "They have the plant";
+		else if (vid.currentTime > 89 && vid.currentTime < 91)
+			document.getElementById("lyrics").innerHTML = "But we have the power.";
+		else if (vid.currentTime > 91)
+			document.getElementById("lyrics").innerHTML = "";
+	}
+
+</script>
+</body>
+</html>	

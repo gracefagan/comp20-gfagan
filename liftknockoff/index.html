@@ -3,12 +3,17 @@
 <head>
 	<title>The Private Car Service</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMs-9woEVpe_j9JfTjmwzET-av2cVhlTo"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMs-9woEVpe_j9JfTjmwzET-av2cVhlTo&libraries=geometry"></script>
 	<<link rel="stylesheet" href="style.css" />
   	<meta charset="utf-8">
 
 	<script>
 	
+	var car_img = 'car.png'
+	var weinermobile = 'weinermobile.png'
+	var passenger_img = 'p.png'
+	var you = 'youarehere.png'
+
 	var request = new XMLHttpRequest();
 	var lat = -99999;
 	var lng = -99999;
@@ -25,8 +30,10 @@
 	var marker;
 	var infowindow = new google.maps.InfoWindow();
 
-	function init() {
+	var username = "d4bazbp8";
 
+	function init()
+	{
 		request.open("POST", "https://hans-moleman.herokuapp.com/rides", true);
 		request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
@@ -34,7 +41,8 @@
 		getLocation();
 	}
 
-	function getLocation(){
+	function getLocation()
+	{
 		if (navigator.geolocation){
 			navigator.geolocation.getCurrentPosition(function(position){
 				lat = position.coords.latitude;
@@ -50,54 +58,117 @@
 		}
 	}
 
-	function renderMap() {
+	function renderMap()
+	{
 		me = new google.maps.LatLng(lat, lng);
 		// Update map and go there...
 		map.panTo(me);
 		
 		// Create a marker
-		marker = new google.maps.Marker({
+		my_marker = new google.maps.Marker({
 			position: me,
-			title: "You Are Here"
+			title: username,
+			icon: you
+			//display username, distance from nearest vehicle or passenger, distance from Weinermobile (if exists)
 		});
-		marker.setMap(map);
+		my_marker.setMap(map);
 			
 		// Open info window on click of marker
-		google.maps.event.addListener(marker, 'click', function() {
+		google.maps.event.addListener(my_marker, 'click', function() {
 			infowindow.setContent(this.title);
 			infowindow.open(map, this);
 		});
 	}
-
-	// function calculate_distance() {
-
-	// 	var distance = google.maps.geometry.spherical.computeDistanceBetween(latLngA, latLngB);
-	// }
-
-	request.onreadystatechange = function() {
+	
+	request.onreadystatechange = function()
+	{
 
 		if (request.readyState == 4 && request.status == 200){
 
-			var vehicles = request.responseText;
-			var list = JSON.parse(vehicles);
+			var vehicles_or_passengers = request.responseText;
+			console.log(vehicles_or_passengers);
+			var list = JSON.parse(vehicles_or_passengers);
 
-			for (count = 0 ; count < list.vehicles.length ; count++) {
-				match = new google.maps.LatLng(list.vehicles[count].lat, list.vehicles[count].lng);
-
-				marker = new google.maps.Marker({
-					position: match,
-					title: "vehicle"
-				});
-
-				marker.setMap(map);
-
-				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(this.title);
-					infowindow.open(map, this);
-				});
+			if (list.passengers != undefined){
+				displayPassengers(list);
+			} else {
+				displayVehicles(list);
 			}
 		}
 	};
+
+	function computeDistance(LatLngA, LatLngB)
+	{
+		var distance = google.maps.geometry.spherical.computeDistanceBetween(LatLngA, LatLngB);
+		return distance / 1609;
+	}
+
+	function displayVehicles(list)
+	{
+		for (count = 0 ; count < list.vehicles.length ; count++) {
+			console.log(list.vehicles[count]);
+			match = new google.maps.LatLng(list.vehicles[count].lat, list.vehicles[count].lng);
+			distance = computeDistance(me, match);
+			console.log(distance);
+
+			if (list.vehicles[count].username == "WEINERMOBILE"){
+				marker = new google.maps.Marker({
+				position: match,
+				title: "USERNAME: " + list.vehicles[count].username + "\nDISTANCE AWAY: " + distance,
+				icon: weinermobile
+			});
+			} else {
+				marker = new google.maps.Marker({
+				position: match,
+				title: "USERNAME: " + list.vehicles[count].username + "\nDISTANCE AWAY: " + distance,
+				icon: car_img
+			});
+
+			}
+
+			marker.setMap(map);
+
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.setContent(this.title);
+				infowindow.open(map, this);
+			});
+		}
+	}
+
+	function displayPassengers(list)
+	{
+		for (count = 0 ; count < list.passengers.length ; count++) {
+			//console.log(list.passengers[count]);
+			match = new google.maps.LatLng(list.passengers[count].lat, list.passengers[count].lng);
+
+			distance = computeDistance(me, match);
+			console.log(distance);
+
+			if (list.passengers[count].username == "WEINERMOBILE"){
+				marker = new google.maps.Marker({
+				position: match,
+				title: "USERNAME: " + list.passengers[count].username + "\nDISTANCE AWAY: " + distance,
+				icon: weinermobile
+			});
+			} else {
+				console.log(list.passengers[count].lat, list.passengers[count].lng);
+				marker = new google.maps.Marker({
+				position: match,
+				title: "USERNAME: " + list.passengers[count].username + "\nDISTANCE AWAY: " + distance,
+				icon: passenger_img
+			});
+
+			}
+
+			marker.setMap(map);
+
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.setContent(this.title);
+				infowindow.open(map, this);
+			});
+		}
+	}
+
 </script>
 </head>
 

@@ -5,7 +5,11 @@ html {
 body {
 	height: 100%;
 	margin: 0px;
-	padding: 0px;
+	padding: 10px;
+	font-family: Futura;
+	font-size: 24px;
+	color: #ff00bf;
+	algin: center;
 }
 
 #map_canvas {

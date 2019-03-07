@@ -1,19 +1,28 @@
+<!-- 
+Grace Fagan
+Comp20 Assignment #2
+Spring 2019
+The Private Car Service 
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
 	<title>The Private Car Service</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMs-9woEVpe_j9JfTjmwzET-av2cVhlTo&libraries=geometry"></script>
-	<<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="style.css" />
   	<meta charset="utf-8">
 
 	<script>
 	
+	/* MAP ICON VARIABLES */
 	var car_img = 'car.png'
 	var weinermobile = 'weinermobile.png'
 	var passenger_img = 'p.png'
 	var you = 'youarehere.png'
 
+	/* GLOBAL VARIABLES */
 	var request = new XMLHttpRequest();
 	var lat = -99999;
 	var lng = -99999;
@@ -30,8 +39,11 @@
 	var marker;
 	var infowindow = new google.maps.InfoWindow();
 
+	var closestMatch = 0;
+	var closestWeinermobile = 0;
 	var username = "d4bazbp8";
 
+	/* function called when page loads, opens request and gets current location */
 	function init()
 	{
 		request.open("POST", "https://hans-moleman.herokuapp.com/rides", true);
@@ -41,14 +53,13 @@
 		getLocation();
 	}
 
+	/* gets current location of user, sends request with said location */
 	function getLocation()
 	{
 		if (navigator.geolocation){
 			navigator.geolocation.getCurrentPosition(function(position){
 				lat = position.coords.latitude;
 				lng = position.coords.longitude;
-
-				renderMap();
 
 				//send request with three parameters
 				request.send("username=d4bazbp8&lat="+lat+"&lng="+lng);
@@ -58,35 +69,47 @@
 		}
 	}
 
+	/* initializes on-screen map, sets marker and position of current location */
 	function renderMap()
 	{
-		me = new google.maps.LatLng(lat, lng);
-		// Update map and go there...
 		map.panTo(me);
 		
-		// Create a marker
+		//marker for your current location
 		my_marker = new google.maps.Marker({
 			position: me,
-			title: username,
+			title: "YOU ARE HERE" + "<br>",
+			content: setMyInfoContent(),
 			icon: you
-			//display username, distance from nearest vehicle or passenger, distance from Weinermobile (if exists)
 		});
 		my_marker.setMap(map);
 			
 		// Open info window on click of marker
 		google.maps.event.addListener(my_marker, 'click', function() {
-			infowindow.setContent(this.title);
+			infowindow.setContent(this.title + "<br>" + this.content);
 			infowindow.open(map, this);
 		});
 	}
-	
+
+	function setMyInfoContent()
+	{
+		if (closestWeinermobile == 0){
+			return username + "<br>" + "closest match: " + closestMatch + 
+				" miles away" + "<br>" + "Weinermobile is nowhere to be seen :(";
+		} else {
+			return username + "<br>" + "closest match: " + closestMatch + 
+				" miles away" + "<br>" + "Weinermobile is " + closestWeinermobile +
+				" miles away!";
+		}
+	}
+
+	/* callback function called after XMLHttp request is sent */
 	request.onreadystatechange = function()
 	{
 
 		if (request.readyState == 4 && request.status == 200){
 
+			//get and parse request, send information to relevant function
 			var vehicles_or_passengers = request.responseText;
-			console.log(vehicles_or_passengers);
 			var list = JSON.parse(vehicles_or_passengers);
 
 			if (list.passengers != undefined){
@@ -94,76 +117,112 @@
 			} else {
 				displayVehicles(list);
 			}
+
+			//add on-screen map once location of nearest matches are known
+			renderMap();
 		}
 	};
 
+	/* uses a helper variable to find the closest match from given distance, returns
+	current closest match */
+	function findClosestMatch(distance, closestMatch)
+	{
+		if (closestMatch == 0){
+			closestMatch = distance;
+		}
+		else if (distance < closestMatch){
+			closestMatch = distance;
+		}
+
+		return closestMatch;
+	}
+
+	/* google maps API function that computes distance between two locations */
 	function computeDistance(LatLngA, LatLngB)
 	{
 		var distance = google.maps.geometry.spherical.computeDistanceBetween(LatLngA, LatLngB);
-		return distance / 1609;
+		return Math.round((distance / 1609) * 100) / 100;
 	}
 
+	/* displays locations of vehicles, called if user is a passenger looking for drivers */
 	function displayVehicles(list)
 	{
+		me = new google.maps.LatLng(lat, lng);
+
+		/* iterate through parsed response text, find distance between user and vehicle */
 		for (count = 0 ; count < list.vehicles.length ; count++) {
-			console.log(list.vehicles[count]);
+
 			match = new google.maps.LatLng(list.vehicles[count].lat, list.vehicles[count].lng);
 			distance = computeDistance(me, match);
-			console.log(distance);
+			closestMatch = findClosestMatch(distance, closestMatch);
 
+			/* set proper marker */
 			if (list.vehicles[count].username == "WEINERMOBILE"){
+
+				closestWeinermobile = findClosestMatch(distance, closestWeinermobile);
+
 				marker = new google.maps.Marker({
 				position: match,
-				title: "USERNAME: " + list.vehicles[count].username + "\nDISTANCE AWAY: " + distance,
+				content: "USERNAME: " + list.vehicles[count].username + "<br><br>DISTANCE AWAY: " + distance + 
+					" miles",
 				icon: weinermobile
 			});
 			} else {
 				marker = new google.maps.Marker({
 				position: match,
-				title: "USERNAME: " + list.vehicles[count].username + "\nDISTANCE AWAY: " + distance,
+				content: "USERNAME: " + list.vehicles[count].username + "<br><br>DISTANCE AWAY: " + distance +
+					" miles",
 				icon: car_img
 			});
-
 			}
 
 			marker.setMap(map);
 
+			/* call infowindow when marker is clicked */
 			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.setContent(this.title);
+				infowindow.setContent(this.content);
 				infowindow.open(map, this);
 			});
 		}
 	}
 
+	/* displays locations of passengers, called if user is a driver looking for passengers */
 	function displayPassengers(list)
 	{
+		me = new google.maps.LatLng(lat, lng);
+		
+		/* iterate through parsed response text, find distance between user and passenger */
 		for (count = 0 ; count < list.passengers.length ; count++) {
-			//console.log(list.passengers[count]);
+
 			match = new google.maps.LatLng(list.passengers[count].lat, list.passengers[count].lng);
-
 			distance = computeDistance(me, match);
-			console.log(distance);
+			closestMatch = findClosestMatch(distance, closestMatch);
 
+			/* set proper marker */
 			if (list.passengers[count].username == "WEINERMOBILE"){
+
+				closestWeinermobile = findClosestMatch(distance, closestWeinermobile);
+
 				marker = new google.maps.Marker({
 				position: match,
-				title: "USERNAME: " + list.passengers[count].username + "\nDISTANCE AWAY: " + distance,
+				content: "USERNAME: " + list.passengers[count].username + "<br><br>DISTANCE AWAY: " + distance + 
+					" miles",
 				icon: weinermobile
 			});
 			} else {
-				console.log(list.passengers[count].lat, list.passengers[count].lng);
 				marker = new google.maps.Marker({
 				position: match,
-				title: "USERNAME: " + list.passengers[count].username + "\nDISTANCE AWAY: " + distance,
+				content: "USERNAME: " + list.passengers[count].username + "<br><br>DISTANCE AWAY: " + distance + 
+					" miles",
 				icon: passenger_img
 			});
-
 			}
 
 			marker.setMap(map);
 
+			/* call infowindow when marker is clicked */
 			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.setContent(this.title);
+				infowindow.setContent(this.content);
 				infowindow.open(map, this);
 			});
 		}
@@ -173,6 +232,7 @@
 </head>
 
 <body onload="init()">
+	<p> Welcome to Lift! (like Lyft, but better) </p>
 	<div id="map_canvas"></div>
 
 </body>

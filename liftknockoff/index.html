@@ -115,7 +115,9 @@ The Private Car Service
 			if (list.passengers != undefined){
 				displayPassengers(list);
 			} else {
-				displayVehicles(list);
+				if (list.vehicles != undefined) {
+					displayVehicles(list);
+				}
 			}
 
 			//add on-screen map once location of nearest matches are known

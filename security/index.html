@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Grace Fagan's Assignment 4</title>
+	<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+	<h1 class="header">~NEVER TRUST USER INPUT~</h1>
+	<h3 class="header">a memoir</h3>
+
+	<h2> Introduction </h2>
+		<p> I was hired to check security vulnerabilities on both the clientside
+			and serverside for an Private Car Service web application. </p>
+
+	<h2> Methodology </h2>
+		<p> To start testing the web application, I used the black box method.
+		I tried to insert javascript as data for the POST /rides request and
+		then rendering it as HTML on the browser, but found that the app never
+		directly renders the data as HTML, and uses a JSON format instead.
+		I also tried inserting an HTML tag as the username of a passenger to render
+		a photo. </p>
+
+		<p> Next, I used OWASP ZAP to find vulnerabilities in the source code by
+		scanning the web application's URL. Here, I found many vulnerabilities.</p>
+
+	<h2> Abstract of Findings </h2>
+		<p>There are various security vulnerabilities and threats to privacy.
+		A major security threat is the ability for NoSQL Database injections, along
+		with improper HTTP headers (X-Frame Header and Content-Type Header) 
+		that would allow a malicious user to input bad data into the database.</p>
+
+	<h2> Issues Found </h2>
+		<h1 class="num">1<h1><h3>NoSQL Database Injections</h3>
+		<div class="issue">
+			<h4>Location</h4>
+				<p>server.js, the web server implementation (specifically the POST request implementation)</p>
+			<h4>Severity of Issue</h4>
+				<p class="HIGH">HIGH</p><p>- Huge privacy concern (all database information can be 
+				leaked), potential for malicious javascript to be rendered as HTML
+				and affect all users</p>
+			<h4>Description of Issue</h4>
+				<p>I found this issue by manually looking through the js code. 
+				In the post request, I found the code lacks validation of input
+				before the entry gets added to the database. I then added an HTML
+				tag to the username entry and the program was unable to render 
+				a marker for the given passenger.</p>
+			<h4>Proof of Vulnerability</h4>
+				<img src="NoSQL1.png">
+				<img src="NoSQL2.png">
+			<h4>Resolution</h4>
+				<p>To fix this vulnerability, the programmer should remove all special
+				characters from entries before putting them into the database. This
+				can be done by downloading an npm mongo-query-parser to validate
+				input before entry into the database. It is also important to include
+				a Content-Type HTTP request header to verify the type of content
+				expected from a request.</p>
+			<h4>Link to Source</h4>
+				<a href="https://github.com/fresheneesz/mongo-parse">Mongo Query Parser</a>
+		</div>
+
+		<h1 class="num">2<h1><h3>Clickjacking Attack</h3>
+		<div class="issue">
+			<h4>Location</h4>
+				<p>server.js, the web server implementation, specifically in request headers</p>
+			<h4>Severity of Issue</h4>
+				<p class="Medium">Medium</p><p>- Privacy concern: Allows a malicious
+					hacker trick the user into clicking something that is "hidden" behind
+					a button, can be malicious if user deletes items or gives away
+					private information, and can also be redirected to a dangerous 
+					alternate URL.</p>
+			<h4>Description of Issue</h4>
+				<p>I found this issue using the OSWAP ZAP software.</p>
+			<h4>Proof of Vulnerability</h4>
+				<img src="Click1.png">
+				<img src="Click2.png">
+			<h4>Resolution</h4>
+				<p>This is a simple fix that significantly increases the
+				security of your webpage. Including an X-Frame-Options request
+				header with the DENY = true.</p>
+			<h4>Link to Source</h4>
+				<a href="https://www.imperva.com/learn/application-security/clickjacking/">More
+				Information about X-Frame Header Options</a>
+		</div>
+
+		<h1 class="num">3<h1><h3>Cross-Site Scripting</h3>
+		<div class="issue">
+			<h4>Location</h4>
+				<p>server.js, the web server implementation,</p>
+			<h4>Severity of Issue</h4>
+				<p class="HIGH">HIGH</p><p>- A hacker could send malicious
+				JavaScript as data to a post request that interrupts the
+				flow of the program and can inject a virus or send a user to 
+				a dangerous URL. This is a really powerful vulnerability! There
+				are some protections against XSS currently, such as making sure
+				the inputted Lat/Lng values are floating points and the inability
+				for the Google Maps markers to render javascript, but XSS is
+				still possible.</p>
+			<h4>Description of Issue</h4>
+				<p>I found this issue using the OSWAP ZAP software.</p>
+			<h4>Proof of Vulnerability</h4>
+				<img src="XSS1.png">
+			<h4>Resolution</h4>
+				<p>This is a simple fix that significantly increases the
+				security of your webpage. To make sure XSS is not possible, 
+				include a request header that protects against XSS possibilities.
+				Within the header, the mode should be set to X-XSS-Protection = 1,
+				mode = block.</p>
+			<h4>Link to Source</h4>
+				<a href="https://stackoverflow.com/questions/9090577/what-is-the-http-header-x-xss-protection">
+				About X-XSS-Headers</a>
+		</div>
+
+
+	<h2> Conclusions </h2>
+		<p>In conclusion, this web application is lacking various protections that 
+		provide signficant security and privacy vulnerabilities. At it's current state,
+		it is easy for a hacker to access and change information stored in a database using
+		NoSQL injections, and it is possible for a hacker to enable a Clickjacking Attack by
+		hiding links or commands behind the displayed webpage to trick the user. Lastly,
+		XSS protections are not as strong as they could be, making this web app
+		vulnerable to malicious rendering of javascript code.</p>
+	<h2> References </h2>
+	<p> See links below each issue for more documentation on solutions. I used
+	OSWAP's ZAP software to attack and scan the web application.</p>
+
+	<p>**my partner's GET /passenger.json request was originally broken, so I was unable to test
+	XSS possibilities with this feature.</p>
+
+</body>
+</html>

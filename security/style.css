@@ -1,0 +1,43 @@
+body {
+	background-color: rgb(245, 239, 161);
+}
+
+img {
+	width: 500px;
+}
+
+h3 {
+	font-family: Comic Sans MS;
+}
+
+
+.header {
+	font-family: Zapfino;
+	color: rgb(226, 96, 205);
+	text-align: center;
+}
+
+.HIGH {
+	font-family: Impact;
+	size: 36px;
+	color: red;
+}
+
+.Medium {
+	font-family: Impact;
+	size: 36px;
+	color: orange;
+}
+
+.issue {
+	margin-left: 45px;
+	padding: 0px 10px 10px 30px;
+	b
+}
+
+.num {
+	size: 36px;
+	color: red;
+	border: 1px solid red;
+	text-align: center;
+}

@@ -1,7 +1,6 @@
-README
-
 Grace Fagan
-Comp20 Spring 2019
+Tufts University
+Comp20: Web Programming Spring 2019
 
 1. This GitHub repository contains labs and assignments from Comp20: Web Programming at Tufts University.
 
